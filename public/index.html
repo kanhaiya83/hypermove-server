@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+</head>
+<style>
+    .table-container{
+        display: none;
+    }
+    .table-container.show{
+        display: block;
+    }
+    .loader{
+        width: 100%;
+        text-align: center;
+        display: none;
+    }
+    .loader.show{
+        display: block;
+    }
+    table{
+
+        width: 100%;
+        text-align: center;
+    }
+    .delete-btn{
+        background-color: red;
+        color: white;
+        padding: 0.4rem 0.5rem;
+        border-radius: 100rem;
+        border: none;
+        max-width: 100px;
+    }
+</style>
+<body>
+    <h1>Admin Panel</h1>
+   <div class="loader show"> <h4>Loading...</h4></div>
+<div class="table-container">
+    <table>
+        <tbody>
+           <tr> <th>Number</th>
+            <th>Name</th>
+            <th>Score</th>
+            <th>Wallet Address</th></tr>
+            
+        </tbody>
+    </table>
+</div>
+    <script>
+const deleteItem=(id,btn)=>{
+    const row=btn.parentElement
+    fetch("/score/"+id,{method:"DELETE"}).then(d=>d.json()).then(res=>{
+        if(res.success){
+            row.remove()
+        }
+    })
+}
+        const addListeners=()=>{
+            document.querySelectorAll(".delete-btn").forEach(btn=>{
+                btn.addEventListener("click",()=>{
+                    btn.innerHTML="Deleting..."
+                    const id=btn.dataset.id
+                    console.log(id)
+                    deleteItem(id,btn)
+
+                })
+            })
+        }
+        (async ()=>{
+            const res=await fetch("/score")
+            const data= await res.json();
+            if(data.success){
+                data.scores.forEach((sc,i)=>{
+                    const row=document.createElement("tr")
+                    row.innerHTML=`
+                    <td>${i+1}</td>
+            <td>${sc.name}</td>
+            <td>${sc.score}</td>
+            <td>${sc.walletAddress}</td>
+            <td data-id=${sc._id} class="delete-btn">Delete</td>`
+
+            document.querySelector("tbody").appendChild(row)
+                })
+                addListeners()
+                document.querySelector(".table-container").classList.add("show")
+                document.querySelector(".loader").classList.remove("show")
+            }
+
+
+        })()
+    </script>
+</body>
+</html>

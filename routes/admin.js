@@ -38,20 +38,11 @@ router.get("/", async (req, res) => {
     return res.status(500).send({ success:false,message:"Some error occurred!!",error: e });
   }
 });
-router.delete("/",async (req, res) => {
- 
+router.delete("/id",async (req, res) => {
+    
+    
     try {
-      const scores= await ScoreModel.deleteMany();
-  
-      res.send({success:true});
-    } catch (e) {
-      return res.status(500).send({ success:false,message:"Some error occurred!!",error: e });
-    }
-  })
-router.delete("/:id",async (req, res) => {
- const id=req.params.id
-    try {
-      const scores= await ScoreModel.deleteOne({id:id});
+      const scores= await ScoreModel.delete({id:req.params.id});
   
       res.send({success:true});
     } catch (e) {
