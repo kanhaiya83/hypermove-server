@@ -82,7 +82,7 @@
     <script>
 const deleteItem=(id,btn)=>{
     const row=btn.parentElement.parentElement
-    fetch("/score/"+id,{method:"DELETE"}).then(d=>d.json()).then(res=>{
+    fetch("/score/"+id,{method:"DELETE",headers:{"auth-password":"admin"}}).then(d=>d.json()).then(res=>{
         if(res.success){
             row.remove()
         }

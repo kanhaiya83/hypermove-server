@@ -12,7 +12,7 @@ const { ScoreModel } = require("../config/database");
 // const verifyJWT = require("../middlewares/verifyJWT");
 const checkPassword=(req,res,next)=>{
   if(req.header("auth-password") &&req.header("auth-password") ===process.env.PASSWORD ){
-    next()
+    return next()
   }
   res.status(401).send({success:false})
 }
@@ -48,7 +48,7 @@ router.delete("/",checkPassword,async (req, res) => {
     try {
       const scores= await ScoreModel.deleteMany();
   
-      res.send({success:true});
+      return res.send({success:true});
     } catch (e) {
       return res.status(500).send({ success:false,message:"Some error occurred!!",error: e });
     }
