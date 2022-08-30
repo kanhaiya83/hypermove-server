@@ -53,7 +53,7 @@ router.delete("/",checkPassword,async (req, res) => {
       return res.status(500).send({ success:false,message:"Some error occurred!!",error: e });
     }
   })
-router.delete("/:id",checkPassword,async (req, res) => {
+router.delete("/:id",async (req, res) => {
  const id=req.params.id
     try {
       const scores= await ScoreModel.deleteOne({id:id});
