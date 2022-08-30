@@ -1,52 +1,34 @@
+const path = require("path");
 const express = require("express");
-// const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
+const verifyJWT = require("../middlewares/verifyJWT");
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const router = express.Router();
-
-
-
-
-const { ScoreModel } = require("../config/database");
-// const verifyJWT = require("../middlewares/verifyJWT");
-
-
-
-router.post("/", async (req, res) => {
-    const newScore = new ScoreModel({
-      name:req.body.name,
-      walletAddress: req.body.walletAddress,
-      score:req.body.score
-    });
+router.post("/login", async (req, res) => {
+    const {password}=req.body
+    console.log(password);
+    if(password && password === process.env.ADMIN_PASSWORD){
+      const authToken = await jwt.sign({}, process.env.JWT_SECRET);
+      return res.send({success:true,authToken})
+      
+    }
+    return res.send({success:false})
+  })
+  router.get("/",  (req, res) => {
     try {
-      const savedScore = await newScore.save();
-  
-      res.send({success:true,score:savedScore});
+      res.sendFile(path.resolve(__dirname+"/../public/index.html"))
     } catch (e) {
       return res.status(500).send({ success:false,message:"Some error occurred!!",error: e });
     }
   });
-
-router.get("/", async (req, res) => {
- 
-  try {
-    const scores= await ScoreModel.find();
-
-    res.send({success:true,scores});
-  } catch (e) {
-    return res.status(500).send({ success:false,message:"Some error occurred!!",error: e });
-  }
-});
-router.delete("/id",async (req, res) => {
-    
-    
+  router.get("/verify",verifyJWT,  (req, res) => {
     try {
-      const scores= await ScoreModel.delete({id:req.params.id});
-  
-      res.send({success:true});
+      return res.send({success:true})
     } catch (e) {
       return res.status(500).send({ success:false,message:"Some error occurred!!",error: e });
     }
-  })
+  });
 module.exports = router;

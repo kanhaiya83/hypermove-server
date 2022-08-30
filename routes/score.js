@@ -5,7 +5,7 @@ app.use(express.json());
 require("dotenv").config()
 const router = express.Router();
 const Web3 = require("web3");
-
+const verifyJWT=require("./../middlewares/verifyJWT")
 
 const isValidEthAddress = (address) => Web3.utils.isAddress(address);
 
@@ -19,7 +19,7 @@ const checkPassword=(req,res,next)=>{
 }
 
 
-router.post("/", async (req, res) => {
+router.post("/",async (req, res) => {
 
   const {name,walletAddress,score}=req.body;
 if(!isValidEthAddress(walletAddress)){
@@ -49,17 +49,7 @@ router.get("/", async (req, res) => {
     return res.status(500).send({ success:false,message:"Some error occurred!!",error: e });
   }
 });
-router.delete("/",checkPassword,async (req, res) => {
- 
-    try {
-      const scores= await ScoreModel.deleteMany();
-  
-      return res.send({success:true});
-    } catch (e) {
-      return res.status(500).send({ success:false,message:"Some error occurred!!",error: e });
-    }
-  })
-router.delete("/:id",async (req, res) => {
+router.delete("/:id",verifyJWT,async (req, res) => {
  const id=req.params.id
     try {
       const scores= await ScoreModel.deleteOne({id:id});

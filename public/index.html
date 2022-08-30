@@ -1,135 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin</title>
-</head>
-<style>
-    body{
-        text-align: center;
+  </head>
+  <style>
+    body {
+      text-align: center;
     }
-    .show{
-        display: block!important;
-    }
-    .main-content{
-        display: none;
-    }
-    .login-container{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        max-width: 700px;
-        margin: 0 auto;
-        display: none;
-    }
-    .heading{
-        margin-bottom: 2rem;
-    }
-    .table-container{
-        display: none;
-    }
-    .loader{
-        width: 100%;
-        text-align: center;
-        display: none;
-    }
-    table{
-
-        width: 100%;
-        text-align: center;
-    }
-    .delete-btn{
-        background-color: #F34440;
-        color: white;
-        padding: 0.2rem 1rem;
-        border-radius: 100rem;
-        border: none;
+    .logout-btn{
+        position: absolute;
+        top: 2rem;
+        right: 3%;
+        padding: 5px 1rem;
         font-size: 1.1rem;
+        display: none;
     }
-    .delete-btn:hover{
-        cursor: pointer;
+    .show {
+      display: block !important;
     }
-    .table-container tr{
-        padding:0.5rem 0;
+    .admin-panel {
+      display: none;
     }
-</style>
-<body>
+    .login-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 700px;
+      margin: 0 auto;
+      display: none;
+    }
+    .heading {
+      margin-bottom: 2rem;
+    }
+    .table-container {
+      display: none;
+    }
+    .loader {
+      width: 100%;
+      text-align: center;
+      display: none;
+    }
+    table {
+      width: 100%;
+      text-align: center;
+    }
+    .delete-btn {
+      background-color: #f34440;
+      color: white;
+      padding: 0.2rem 1rem;
+      border-radius: 100rem;
+      border: none;
+      font-size: 1.1rem;
+    }
+    .delete-btn:hover {
+      cursor: pointer;
+    }
+    .table-container tr {
+      padding: 0.5rem 0;
+    }
+  </style>
+  <body>
+    <button class="logout-btn">Logout</button>
     <h1 className="heading">Admin Panel</h1>
+    <!-- shows up by default -->
     <div class="login-container show">
-        <h5>Please enter the password:</h5>
-        <form class="login-form">
-            
-        <input type="text" id="password" >
+      <h5>Please enter the password:</h5>
+      <form class="login-form">
+        <input type="password" id="password" name="password" />
         <button>Login</button>
-        </form>
+      </form>
     </div>
-   <div class="main-content">
-    <div class="loader show"> <h4>Loading...</h4></div>
-<div class="table-container">
-    <table>
-        <tbody>
-           <tr> <th>Number</th>
-            <th>Name</th>
-            <th>Score</th>
-            <th>Wallet Address</th></tr>
-            
-        </tbody>
-    </table>
-</div>
-   </div>
+    <!-- show classis added when user is verified -->
+    <div class="admin-panel">
+      <div class="loader show"><h4>Loading...</h4></div>
+      <div class="table-container">
+        <table>
+          <tbody>
+            <tr>
+              <th>Number</th>
+              <th>Name</th>
+              <th>Score</th>
+              <th>Wallet Address</th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+   
     <script>
-const deleteItem=(id,btn)=>{
-    const row=btn.parentElement.parentElement
-    fetch("/score/"+id,{method:"DELETE",headers:{"auth-password":"admin"}}).then(d=>d.json()).then(res=>{
-        if(res.success){
-            row.remove()
+        const loginContainer=document.querySelector(".login-container")
+        const logoutBtn=document.querySelector(".logout-btn")
+        const adminPanel=document.querySelector(".admin-panel")
+        const makeLoggedIn=()=>{
+            loginContainer.classList.remove("show")
+            adminPanel.classList.add("show")
+            logoutBtn.classList.add("show")
         }
-    })
-}
-        const addListeners=()=>{
-            document.querySelectorAll(".delete-btn").forEach(btn=>{
-                btn.addEventListener("click",()=>{
-                    btn.innerHTML="Deleting..."
-                    const id=btn.dataset.id
-                    console.log(id)
-                    deleteItem(id,btn)
-
-                })
-            })
+        const makeLoggedOut=()=>{
+            loginContainer.classList.add("show")
+            adminPanel.classList.remove("show")
+            logoutBtn.classList.remove("show")
+            localStorage.removeItem("auth-token")
         }
-        (async ()=>{
-            const res=await fetch("/score")
-            const data= await res.json();
-            if(data.success){
-                data.scores.forEach((sc,i)=>{
-                    const row=document.createElement("tr")
-                    row.innerHTML=`
-                    <td>${i+1}</td>
+      const deleteItem = (id, btn) => {
+        const row = btn.parentElement.parentElement;
+        fetch("/score/" + id, {
+          method: "DELETE",
+          headers: { "auth-token":localStorage.getItem("auth-token") },
+        })
+          .then((d) => d.json())
+          .then((res) => {
+            if (res.success) {
+              row.remove();
+            }
+          });
+      };
+      const addListeners = () => {
+        document.querySelectorAll(".delete-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            btn.innerHTML = "Deleting...";
+            const id = btn.dataset.id;
+            console.log(id);
+            deleteItem(id, btn);
+          });
+        });
+      };
+      (async () => {
+        try{const res = await fetch("/score");
+        const data = await res.json();
+        if (data.success) {
+          data.scores.forEach((sc, i) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                    <td>${i + 1}</td>
             <td>${sc.name}</td>
             <td>${sc.score}</td>
             <td>${sc.walletAddress}</td>
-            <td><button data-id=${sc._id} class="delete-btn">Remove</button></td>`
+            <td><button data-id=${
+              sc._id
+            } class="delete-btn">Remove</button></td>`;
 
-            document.querySelector("tbody").appendChild(row)
-                })
-                addListeners()
-                document.querySelector(".table-container").classList.add("show")
-                document.querySelector(".loader").classList.remove("show")
-            }
-
-
-        })()
+            document.querySelector("tbody").appendChild(row);
+          });
+          addListeners();
+          document.querySelector(".table-container").classList.add("show");
+          document.querySelector(".loader").classList.remove("show");
+        }
+      }catch(e){
+        alert("Some error occurred while fetching scores!")
+      }})();
     </script>
     <script>
-        document.querySelector(".login-form").addEventListener("submit",(e)=>{
-            e.preventDefault()
-            if(e.target["password"].value === "admin"){
-                document.querySelector(".login-container").classList.remove("show")
-                document.querySelector(".main-content").classList.add("show")
-            }
+      document.querySelector(".login-form").addEventListener("submit",async (e) => {
+        e.preventDefault();
+        try{
+            const res=await fetch("/admin/login", {
+          method: "POST",
+          headers: { "auth-token":localStorage.getItem("auth-token"),"Content-Type":"application/json" },
+          body:JSON.stringify({password:e.target["password"].value})
+        })
+        if(!res || !res.ok)return alert("Some error occurred!")
+        const response=await res.json()
+        if(response.success){
+            localStorage.setItem("auth-token",response.authToken)
+           makeLoggedIn()
+            return
+        }
+        alert("wrong password")
+        }
+        catch(e){
+            alert("Some error occurred while logging in")
+        }
+      });
+    </script>
+    <script>
+        logoutBtn.addEventListener("click",()=>{
+            makeLoggedOut()
         })
     </script>
-</body>
+     <script>
+        (async()=>{const token =localStorage.getItem("auth-token") 
+        if(!token){
+            
+        }
+        try{
+            const res=await fetch("/admin/verify", {
+          method: "GET",
+          headers: { "auth-token":localStorage.getItem("auth-token") },
+        })
+        if(!res || !res.ok)return;
+        const response=await res.json()
+        if(response .success){
+            makeLoggedIn()
+            return
+        }
+        }
+        catch(e){
+            console.log(e)
+        }})()
+      
+    </script>
+  </body>
 </html>
