@@ -7,19 +7,33 @@
     <title>Admin</title>
 </head>
 <style>
-    .table-container{
+    body{
+        text-align: center;
+    }
+    .show{
+        display: block!important;
+    }
+    .main-content{
         display: none;
     }
-    .table-container.show{
-        display: block;
+    .login-container{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 700px;
+        margin: 0 auto;
+        display: none;
+    }
+    .heading{
+        margin-bottom: 2rem;
+    }
+    .table-container{
+        display: none;
     }
     .loader{
         width: 100%;
         text-align: center;
         display: none;
-    }
-    .loader.show{
-        display: block;
     }
     table{
 
@@ -27,17 +41,32 @@
         text-align: center;
     }
     .delete-btn{
-        background-color: red;
+        background-color: #F34440;
         color: white;
-        padding: 0.4rem 0.5rem;
+        padding: 0.2rem 1rem;
         border-radius: 100rem;
         border: none;
-        max-width: 100px;
+        font-size: 1.1rem;
+    }
+    .delete-btn:hover{
+        cursor: pointer;
+    }
+    .table-container tr{
+        padding:0.5rem 0;
     }
 </style>
 <body>
-    <h1>Admin Panel</h1>
-   <div class="loader show"> <h4>Loading...</h4></div>
+    <h1 className="heading">Admin Panel</h1>
+    <div class="login-container show">
+        <h5>Please enter the password:</h5>
+        <form class="login-form">
+            
+        <input type="text" id="password" >
+        <button>Login</button>
+        </form>
+    </div>
+   <div class="main-content">
+    <div class="loader show"> <h4>Loading...</h4></div>
 <div class="table-container">
     <table>
         <tbody>
@@ -49,9 +78,10 @@
         </tbody>
     </table>
 </div>
+   </div>
     <script>
 const deleteItem=(id,btn)=>{
-    const row=btn.parentElement
+    const row=btn.parentElement.parentElement
     fetch("/score/"+id,{method:"DELETE"}).then(d=>d.json()).then(res=>{
         if(res.success){
             row.remove()
@@ -80,7 +110,7 @@ const deleteItem=(id,btn)=>{
             <td>${sc.name}</td>
             <td>${sc.score}</td>
             <td>${sc.walletAddress}</td>
-            <td data-id=${sc._id} class="delete-btn">Delete</td>`
+            <td><button data-id=${sc._id} class="delete-btn">Remove</button></td>`
 
             document.querySelector("tbody").appendChild(row)
                 })
@@ -91,6 +121,15 @@ const deleteItem=(id,btn)=>{
 
 
         })()
+    </script>
+    <script>
+        document.querySelector(".login-form").addEventListener("submit",(e)=>{
+            e.preventDefault()
+            if(e.target["password"].value === "admin"){
+                document.querySelector(".login-container").classList.remove("show")
+                document.querySelector(".main-content").classList.add("show")
+            }
+        })
     </script>
 </body>
 </html>

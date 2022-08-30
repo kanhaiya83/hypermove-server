@@ -2,7 +2,7 @@ const express = require("express");
 // const jwt = require("jsonwebtoken");
 const app = express();
 app.use(express.json());
-
+require("dotenv").config()
 const router = express.Router();
 
 
@@ -10,7 +10,12 @@ const router = express.Router();
 
 const { ScoreModel } = require("../config/database");
 // const verifyJWT = require("../middlewares/verifyJWT");
-
+const checkPassword=(req,res,next)=>{
+  if(req.header("auth-password") &&req.header("auth-password") ===process.env.PASSWORD ){
+    next()
+  }
+  res.status(401).send({success:false})
+}
 
 
 router.post("/", async (req, res) => {
@@ -38,7 +43,7 @@ router.get("/", async (req, res) => {
     return res.status(500).send({ success:false,message:"Some error occurred!!",error: e });
   }
 });
-router.delete("/",async (req, res) => {
+router.delete("/",checkPassword,async (req, res) => {
  
     try {
       const scores= await ScoreModel.deleteMany();
@@ -48,7 +53,7 @@ router.delete("/",async (req, res) => {
       return res.status(500).send({ success:false,message:"Some error occurred!!",error: e });
     }
   })
-router.delete("/:id",async (req, res) => {
+router.delete("/:id",checkPassword,async (req, res) => {
  const id=req.params.id
     try {
       const scores= await ScoreModel.deleteOne({id:id});
