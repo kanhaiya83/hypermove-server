@@ -4,9 +4,10 @@ const app = express();
 app.use(express.json());
 require("dotenv").config()
 const router = express.Router();
+const Web3 = require("web3");
 
 
-
+const isValidEthAddress = (address) => Web3.utils.isAddress(address);
 
 const { ScoreModel } = require("../config/database");
 // const verifyJWT = require("../middlewares/verifyJWT");
@@ -19,6 +20,11 @@ const checkPassword=(req,res,next)=>{
 
 
 router.post("/", async (req, res) => {
+
+  const {name,walletAddress,score}=req.body;
+if(!isValidEthAddress(walletAddress)){
+  return res.send({success:false,message:"Invalid wallet address!",error:"Invalid wallet address!"})
+}
     const newScore = new ScoreModel({
       name:req.body.name,
       walletAddress: req.body.walletAddress,
