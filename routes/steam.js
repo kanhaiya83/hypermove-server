@@ -34,7 +34,7 @@ router.get(
           ok: true,
           user:${JSON.stringify(req.user)}
     
-        },"http://localhost:3000");
+        },"https://hypermove-demov2.netlify.app");
         window.close()
     
         </script>
