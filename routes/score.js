@@ -18,7 +18,6 @@ const checkPassword=(req,res,next)=>{
   res.status(401).send({success:false})
 }
 
-
 router.post("/",async (req, res) => {
 
   const {name,walletAddress,score}=req.body;
@@ -28,7 +27,8 @@ if(!isValidEthAddress(walletAddress)){
     const newScore = new ScoreModel({
       name:req.body.name,
       walletAddress: req.body.walletAddress,
-      score:req.body.score
+      score:req.body.score,
+      createdAt:new Date().getTime()
     });
     try {
       const savedScore = await newScore.save();

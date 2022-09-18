@@ -20,15 +20,27 @@ mongoose
 // Creates simple schema for a User.  The hash and salt are derived from the user's given password when they register
 
 const scoreSchema = new Schema({
-    name: {type:String,required:true},
-    walletAddress: {type:String,required:true},
-    score: {type:String,required:true}  });
-  
-
+  name: {type:String,required:true},
+  walletAddress: {type:String,required:true},
+  score: {type:String,required:true}  ,
+  isBanned:{type:Boolean,default:false},
+  createdAt:{type:Number}
+})
+const userSchema = new Schema({
+    name: {type:String},
+    userId: {type:String},
+    avatar: {type:String},
+    address: {type:String},
+    messageToSign: {type:String},
+    isMetamaskConnected: {type:Boolean},
+    isSteamConnected: {type:Boolean},
+    timecreated:{type:Number},
+  })
+const UserModel=mongoose.model("SteamUser",userSchema)
 const ScoreModel = mongoose.model('Score', scoreSchema);
 
 
 
 
 
-module.exports = {ScoreModel};
+module.exports = {ScoreModel,UserModel};
