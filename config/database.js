@@ -29,7 +29,7 @@ const scoreSchema = new Schema({
 const partnerSchema = new Schema({
   name:{type:String},
   image:{type:String},
-  tags:[{type:String}]
+  tags:{type:String}
 })
 const userSchema = new Schema({
     name: {type:String},

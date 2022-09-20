@@ -51,10 +51,10 @@ router.post("/login", async (req, res) => {
       await PartnersModel.deleteOne({_id:req.params.id})
       return res.send({success:true})
   })
-
   router.post("/partners",upload.single("partner-image"),async(req,res)=>{
     const partnerImage =req.file.filename
   const {url} = await uploadImage(path.join(__dirname,"../uploads/",partnerImage))
+  console.log({image:url,...req.body})
   const newPartner = new PartnersModel({image:url,...req.body})
   const savedPartner = await newPartner.save()
   return res.send({success:true,savedPartner})
