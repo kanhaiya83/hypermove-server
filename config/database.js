@@ -26,6 +26,11 @@ const scoreSchema = new Schema({
   isBanned:{type:Boolean,default:false},
   createdAt:{type:Number}
 })
+const partnerSchema = new Schema({
+  name:{type:String},
+  image:{type:String},
+  tags:[{type:String}]
+})
 const userSchema = new Schema({
     name: {type:String},
     userId: {type:String},
@@ -38,9 +43,10 @@ const userSchema = new Schema({
   })
 const UserModel=mongoose.model("SteamUser",userSchema)
 const ScoreModel = mongoose.model('Score', scoreSchema);
+const PartnersModel = mongoose.model('Partners', partnerSchema);
 
 
 
 
 
-module.exports = {ScoreModel,UserModel};
+module.exports = {ScoreModel,UserModel,PartnersModel};

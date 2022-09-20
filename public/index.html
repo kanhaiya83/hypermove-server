@@ -9,14 +9,15 @@
   <style>
     body {
       text-align: center;
+      background-color: #d8d8d8;
     }
-    .logout-btn{
-        position: absolute;
-        top: 2rem;
-        right: 3%;
-        padding: 5px 1rem;
-        font-size: 1.1rem;
-        display: none;
+    .logout-btn {
+      position: absolute;
+      top: 2rem;
+      right: 3%;
+      padding: 5px 1rem;
+      font-size: 1.1rem;
+      display: none;
     }
     .show {
       display: block !important;
@@ -61,6 +62,30 @@
     .table-container tr {
       padding: 0.5rem 0;
     }
+    .partners-list {
+      display: flex;
+      flex-direction: column;
+    }
+    .partners-list .list-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid black;
+      justify-content: space-around;
+    }
+    .partners-list .list-item img {
+      width: 100%;
+      max-width: 200px;
+    }
+    #partner-form {
+      display: flex;
+      flex-direction: column;
+      max-width: 500px;
+      margin: 1.5rem auto 0;
+    }
+    #partner-form > * {
+      margin-bottom: 1rem;
+    }
   </style>
   <body>
     <button class="logout-btn">Logout</button>
@@ -77,6 +102,7 @@
     <div class="admin-panel">
       <div class="loader show"><h4>Loading...</h4></div>
       <div class="table-container">
+        <h1>Leader Board</h1>
         <table>
           <tbody>
             <tr>
@@ -88,28 +114,102 @@
           </tbody>
         </table>
       </div>
+      <div class="partners-container">
+        <h1>Partners</h1>
+        <div class="partners-list"></div>
+        <h1>Add partner</h1>
+        <form id="partner-form">
+          <input type="text" id="name" placeholder="Partner name" />
+          <input
+            type="text"
+            placeholder="Tags(seperated by comma)"
+            name="tags"
+          />
+          <input type="file" id="partner-image" />
+          <button>Submit</button>
+        </form>
+      </div>
     </div>
-   
     <script>
-        const loginContainer=document.querySelector(".login-container")
-        const logoutBtn=document.querySelector(".logout-btn")
-        const adminPanel=document.querySelector(".admin-panel")
-        const makeLoggedIn=()=>{
-            loginContainer.classList.remove("show")
-            adminPanel.classList.add("show")
-            logoutBtn.classList.add("show")
+      const populatePartners = async () => {
+        const res = await fetch("/admin/partners");
+        const response = await res.json();
+        if (response && response.success) {
+          let innerHTML = "";
+          response.partnersList.forEach((p) => {
+            const listItem = `<div class="list-item">
+            <img src=${p.image} alt="">
+            <h2>Name: ${p.name}</h2>
+            <h2>Tags: ${p.tags}</h2>
+            <button class="delete-partner" id=${p._id}>Delete</button>
+          </div>`;
+            innerHTML += listItem;
+          });
+          document.querySelector(".partners-list").innerHTML = innerHTML;
+          document.querySelectorAll(".delete-partner").forEach(btn=>{
+            btn.addEventListener("click",async()=>{
+              const res=await  fetch("/admin/partner/"+btn.getAttribute("id"),{method:"DELETE"})
+              const response = await res.json()
+              if(response && response.success){
+                populatePartners()
+
+                alert("Partner deleted!!")
+              }
+
+
+            })
+          })
         }
-        const makeLoggedOut=()=>{
-            loginContainer.classList.add("show")
-            adminPanel.classList.remove("show")
-            logoutBtn.classList.remove("show")
-            localStorage.removeItem("auth-token")
-        }
+      };
+      populatePartners();
+    </script>
+    <script>
+      document
+        .querySelector("#partner-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const formData = new FormData();
+          formData.append("partner-image", e.target["partner-image"].files[0]);
+          formData.append("name", e.target["name"].value);
+          formData.append("tags", e.target["tags"].value);
+          const res = await fetch("/admin/partners", {
+            method: "POST",
+            body: formData,
+          });
+          const response = await res.json();
+          console.log(response);
+          if (response && response.success) {
+            populatePartners();
+            alert("Partner added!");
+            // const listItem= `<div class="list-item" >
+            //     <img src=${response.savedPartner.image} alt="">
+            //     <h2>Name: ${response.savedPartner.name}</h2>
+            //     <h2>Tags: ${response.savedPartner.tags}</h2>
+            //   </div>`
+            //   document.querySelector(".partners-list").innerHTML=      document.querySelector(".partners-list").innerHTML +listItem
+          }
+        });
+    </script>
+    <script>
+      const loginContainer = document.querySelector(".login-container");
+      const logoutBtn = document.querySelector(".logout-btn");
+      const adminPanel = document.querySelector(".admin-panel");
+      const makeLoggedIn = () => {
+        loginContainer.classList.remove("show");
+        adminPanel.classList.add("show");
+        logoutBtn.classList.add("show");
+      };
+      const makeLoggedOut = () => {
+        loginContainer.classList.add("show");
+        adminPanel.classList.remove("show");
+        logoutBtn.classList.remove("show");
+        localStorage.removeItem("auth-token");
+      };
       const deleteItem = (id, btn) => {
         const row = btn.parentElement.parentElement;
         fetch("/score/" + id, {
           method: "DELETE",
-          headers: { "auth-token":localStorage.getItem("auth-token") },
+          headers: { "auth-token": localStorage.getItem("auth-token") },
         })
           .then((d) => d.json())
           .then((res) => {
@@ -129,12 +229,13 @@
         });
       };
       (async () => {
-        try{const res = await fetch("/score");
-        const data = await res.json();
-        if (data.success) {
-          data.scores.forEach((sc, i) => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
+        try {
+          const res = await fetch("/score");
+          const data = await res.json();
+          if (data.success) {
+            data.scores.forEach((sc, i) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
                     <td>${i + 1}</td>
             <td>${sc.name}</td>
             <td>${sc.score}</td>
@@ -143,65 +244,69 @@
               sc._id
             } class="delete-btn">Remove</button></td>`;
 
-            document.querySelector("tbody").appendChild(row);
-          });
-          addListeners();
-          document.querySelector(".table-container").classList.add("show");
-          document.querySelector(".loader").classList.remove("show");
+              document.querySelector("tbody").appendChild(row);
+            });
+            addListeners();
+            document.querySelector(".table-container").classList.add("show");
+            document.querySelector(".loader").classList.remove("show");
+          }
+        } catch (e) {
+          alert("Some error occurred while fetching scores!");
         }
-      }catch(e){
-        alert("Some error occurred while fetching scores!")
-      }})();
+      })();
     </script>
     <script>
-      document.querySelector(".login-form").addEventListener("submit",async (e) => {
-        e.preventDefault();
-        try{
-            const res=await fetch("/admin/login", {
-          method: "POST",
-          headers: { "auth-token":localStorage.getItem("auth-token"),"Content-Type":"application/json" },
-          body:JSON.stringify({password:e.target["password"].value})
-        })
-        if(!res || !res.ok)return alert("Some error occurred!")
-        const response=await res.json()
-        if(response.success){
-            localStorage.setItem("auth-token",response.authToken)
-           makeLoggedIn()
-            return
-        }
-        alert("wrong password")
-        }
-        catch(e){
-            alert("Some error occurred while logging in")
-        }
+      document
+        .querySelector(".login-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          try {
+            const res = await fetch("/admin/login", {
+              method: "POST",
+              headers: {
+                "auth-token": localStorage.getItem("auth-token"),
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ password: e.target["password"].value }),
+            });
+            if (!res || !res.ok) return alert("Some error occurred!");
+            const response = await res.json();
+            if (response.success) {
+              localStorage.setItem("auth-token", response.authToken);
+              makeLoggedIn();
+              return;
+            }
+            alert("wrong password");
+          } catch (e) {
+            alert("Some error occurred while logging in");
+          }
+        });
+    </script>
+    <script>
+      logoutBtn.addEventListener("click", () => {
+        makeLoggedOut();
       });
     </script>
     <script>
-        logoutBtn.addEventListener("click",()=>{
-            makeLoggedOut()
-        })
-    </script>
-     <script>
-        (async()=>{const token =localStorage.getItem("auth-token") 
-        if(!token){
-            
+      (async () => {
+        const token = localStorage.getItem("auth-token");
+        if (!token) {
         }
-        try{
-            const res=await fetch("/admin/verify", {
-          method: "GET",
-          headers: { "auth-token":localStorage.getItem("auth-token") },
-        })
-        if(!res || !res.ok)return;
-        const response=await res.json()
-        if(response .success){
-            makeLoggedIn()
-            return
+        try {
+          const res = await fetch("/admin/verify", {
+            method: "GET",
+            headers: { "auth-token": localStorage.getItem("auth-token") },
+          });
+          if (!res || !res.ok) return;
+          const response = await res.json();
+          if (response.success) {
+            makeLoggedIn();
+            return;
+          }
+        } catch (e) {
+          console.log(e);
         }
-        }
-        catch(e){
-            console.log(e)
-        }})()
-      
+      })();
     </script>
   </body>
 </html>

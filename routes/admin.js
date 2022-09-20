@@ -2,10 +2,22 @@ const path = require("path");
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const verifyJWT = require("../middlewares/verifyJWT");
+const { PartnersModel } = require("../config/database");
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+const multer  = require('multer')
+const {uploadImage} = require("./../utils/uploadImage")
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname)) //Appending extension
+  }
+})
 
+var upload = multer({ storage: storage });
 const router = express.Router();
 router.post("/login", async (req, res) => {
     const {password}=req.body
@@ -31,4 +43,20 @@ router.post("/login", async (req, res) => {
       return res.status(500).send({ success:false,message:"Some error occurred!!",error: e });
     }
   });
+  router.get("/partners",async (req,res)=>{
+    const partners = await PartnersModel.find({});
+    return res.send({success:true,partnersList:partners})
+  })
+  router.delete("/partner/:id",async (req,res)=>{
+      await PartnersModel.deleteOne({_id:req.params.id})
+      return res.send({success:true})
+  })
+
+  router.post("/partners",upload.single("partner-image"),async(req,res)=>{
+    const partnerImage =req.file.filename
+  const {url} = await uploadImage(path.join(__dirname,"../uploads/",partnerImage))
+  const newPartner = new PartnersModel({image:url,...req.body})
+  const savedPartner = await newPartner.save()
+  return res.send({success:true,savedPartner})
+  })
 module.exports = router;
