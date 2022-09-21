@@ -10,9 +10,12 @@ const app=express()
 require("./config/steam")(app)
 const cors=require("cors");
 const { UserModel } = require("./config/database");
-
+var corsOptions = {
+  origin: ['http://localhost:3000', 'https://hypermove-demov2.netlify.app',"https://hypermove.io"],
+  credentials: true,
+};
   
-  app.use(cors());
+  app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const PORT=process.env.PORT || 5000;
