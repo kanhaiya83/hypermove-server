@@ -10,15 +10,13 @@ const app=express()
 require("./config/steam")(app)
 const cors=require("cors");
 const { UserModel } = require("./config/database");
-var corsOptions = {
-    origin: "*"
-  };
+
   
-  
-  app.use(cors(corsOptions));
+  app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const PORT=process.env.PORT || 5000;
+
 app.use("/admin",adminRouter)
 app.use("/score",scoreRouter)
 app.use("/",steamRouter)
