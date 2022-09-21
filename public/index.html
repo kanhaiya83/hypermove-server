@@ -137,10 +137,14 @@
         if (response && response.success) {
           let innerHTML = "";
           response.partnersList.forEach((p) => {
+            const tags=""
+            p.tags.split(",").forEach(t=>{
+              tags+=t+", ";
+            })
             const listItem = `<div class="list-item">
             <img src=${p.image} alt="">
             <h2>Name: ${p.name}</h2>
-            <h2>Tags: ${p.tags}</h2>
+            <h2>Tags: ${tags}</h2>
             <button class="delete-partner" id=${p._id}>Delete</button>
           </div>`;
             innerHTML += listItem;
