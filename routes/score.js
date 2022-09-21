@@ -1,7 +1,5 @@
 const express = require("express");
 // const jwt = require("jsonwebtoken");
-const app = express();
-app.use(express.json());
 require("dotenv").config()
 const router = express.Router();
 const Web3 = require("web3");

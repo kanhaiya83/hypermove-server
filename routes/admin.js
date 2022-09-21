@@ -4,8 +4,6 @@ const jwt = require("jsonwebtoken");
 const verifyJWT = require("../middlewares/verifyJWT");
 const { PartnersModel } = require("../config/database");
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 const multer  = require('multer')
 const {uploadImage} = require("./../utils/uploadImage")
 var storage = multer.diskStorage({
