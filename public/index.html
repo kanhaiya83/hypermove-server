@@ -137,7 +137,7 @@
         if (response && response.success) {
           let innerHTML = "";
           response.partnersList.forEach((p) => {
-            const tags=""
+            let tags=""
             p.tags.split(",").forEach(t=>{
               tags+=t+", ";
             })
