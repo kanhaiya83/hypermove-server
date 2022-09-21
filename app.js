@@ -149,7 +149,7 @@ const getJWT = async (req, res) => {
     if (!validSignature) {
       return res.send({ error: "invalid_signature" });
     }
-    const updatedUser = await UserModel.findOneAndUpdate({address},{messageToSign:null},{new:true})
+    const updatedUser = await UserModel.findOneAndUpdate({address},{messageToSign:null,isMetamaskConnected:true},{new:true})
 
     
       return res.send({address,authToken,success:true,updatedUser})    

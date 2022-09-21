@@ -40,6 +40,9 @@ const userSchema = new Schema({
     isMetamaskConnected: {type:Boolean},
     isSteamConnected: {type:Boolean},
     timecreated:{type:Number},
+    steamid:{type:String},
+    personaname:{type:String},
+    profileurl:{type:String},
   })
 const UserModel=mongoose.model("SteamUser",userSchema)
 const ScoreModel = mongoose.model('Score', scoreSchema);

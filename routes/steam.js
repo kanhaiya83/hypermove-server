@@ -1,6 +1,7 @@
 const path = require("path");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
+require("dotenv").config()
 const express = require("express");
 const { UserModel } = require("../config/database");
 const router = express.Router();
@@ -18,6 +19,8 @@ router.get(
   "/auth/steam/return",
   passport.authenticate("steam", { session: false }),
   (req, res) => {
+    const url =req.protocol + '://' + req.get('host')
+    console.log({url})
     res.send(`
     <!DOCTYPE html>
     <html lang="en">
@@ -29,15 +32,20 @@ router.get(
     </head>
     <body>
         
-        <script>
-          window.opener.postMessage({
-          ok: true,
-          user:${JSON.stringify(req.user)}
-    
-        },"https://hypermove-demov2.netlify.app");
-        window.close()
-    
-        </script>
+   
+  <script>
+    try{window.opener.postMessage({
+    ok: true,
+    user:${JSON.stringify(req.user)}
+
+  },"${process.env.CLIENT_URL}");
+
+  window.close()}
+  catch(e){
+    console.log(e)
+  }
+
+  </script>
         <script>
         </script>
     </body>
