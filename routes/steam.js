@@ -40,7 +40,8 @@ router.get(
 
   },"${process.env.CLIENT_URL}");
 
-  window.close()}
+
+}
   catch(e){
     console.log(e)
   }
