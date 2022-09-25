@@ -39,7 +39,7 @@ router.get(
     user:${JSON.stringify(req.user)}
 
   },"${process.env.CLIENT_URL}");
-
+console.log(${process.env.CLIENT_URL},${JSON.stringify(req.user)})
 
 }
   catch(e){
