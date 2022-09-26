@@ -11,7 +11,7 @@ require("./config/steam")(app)
 const cors=require("cors");
 const { UserModel } = require("./config/database");
 var corsOptions = {
-  origin: ['http://localhost:3000', 'https://hypermove-demov2.netlify.app',"https://hypermove.io"],
+  origin: ['http://localhost:3000', 'https://hypermove-demov2.netlify.app',"https://hypermove.io","http://127.0.0.1:3000"],
   credentials: true,
 };
   
@@ -136,9 +136,7 @@ const getJWT = async (req, res) => {
     //   admin.auth().createCustomToken(address),
     //   admin.firestore().collection("users").doc(address).get(),
     // ]);
-    const jwtPayload = {address};
-    const authToken = await jwt.sign(jwtPayload, process.env.JWT_SECRET);
-
+    
     // if (!doc.exists) {
     //   return res.send({ error: "invalid_message_to_sign" });
     // }
@@ -159,6 +157,9 @@ const getJWT = async (req, res) => {
     if (!validSignature) {
       return res.send({ error: "invalid_signature" });
     }
+    const jwtPayload = {id:user._id};
+    const authToken = await jwt.sign(jwtPayload, process.env.JWT_SECRET);
+
     const updatedUser = await UserModel.findOneAndUpdate({address},{messageToSign:null,isMetamaskConnected:true},{new:true})
 
     

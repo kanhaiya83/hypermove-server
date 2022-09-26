@@ -1,26 +1,27 @@
 const path = require("path");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
-require("dotenv").config()
+require("dotenv").config();
 const express = require("express");
 const { UserModel } = require("../config/database");
+const verifyJWT = require("../middlewares/verifyJWT");
 const router = express.Router();
 
 router.get("/auth/steam", passport.authenticate("steam", { session: false }));
-router.get("/all",async (req,res)=>{
-    const data = await UserModel.find({})
-    res.send(data)
-})
-router.get("/all/delete",async (req,res)=>{
-  const data = await UserModel.deleteMany({})
-  res.send(data)
-})
+router.get("/all", async (req, res) => {
+  const data = await UserModel.find({});
+  res.send(data);
+});
+router.get("/all/delete", async (req, res) => {
+  const data = await UserModel.deleteMany({});
+  res.send(data);
+});
 router.get(
   "/auth/steam/return",
   passport.authenticate("steam", { session: false }),
   (req, res) => {
-    const url =req.protocol + '://' + req.get('host')
-    console.log({url})
+    const url = req.protocol + "://" + req.get("host");
+    console.log({ url });
     res.send(`
     <!DOCTYPE html>
     <html lang="en">
@@ -34,13 +35,14 @@ router.get(
         
    
   <script>
-    try{window.opener.postMessage({
+    try{
+      
+    window.opener.postMessage({
     ok: true,
     user:${JSON.stringify(req.user)}
 
   },"${process.env.CLIENT_URL}");
-console.log(${process.env.CLIENT_URL},${JSON.stringify(req.user)})
-
+window.close()
 }
   catch(e){
     console.log(e)
@@ -52,19 +54,20 @@ console.log(${process.env.CLIENT_URL},${JSON.stringify(req.user)})
     </body>
     </html>
     `);
-  },
-);
-router.get("/user/check/:address",async (req,res)=>{
-  const foundUser = await UserModel.findOne({address:req.params.address})
-  if(!foundUser) return {success:false}
-  if(foundUser.isSteamConnected){
-    return res.send({success:true,isSteamConnected:true,foundUser})
   }
-    return res.send({success:false,isSteamConnected:true,foundUser})
-
-})
-router.post("/user/:address",async (req,res)=>{
-  const updatedUser = await UserModel.findOneAndUpdate({address:req.params.address},{...req.body,isSteamConnected:true,isMetamaskConnected:true},{new:true,upsert:true})
-  return res.send({success:true,updatedUser})
-})
+);
+router.get("/user/check",verifyJWT, async (req, res) => {
+  const foundUser = await UserModel.findById(req.userId);
+  if (!foundUser) return { success: false };
+  
+  return res.send({ success: true,user:foundUser });
+});
+router.post("/user", verifyJWT, async (req, res) => {
+  const updatedUser = await UserModel.findByIdAndUpdate(
+    req.userId,
+    { ...req.body, isSteamConnected: true, isMetamaskConnected: true },
+    { new: true, upsert: true }
+  );
+  return res.send({ success: true, updatedUser });
+});
 module.exports = router;
