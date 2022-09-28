@@ -11,7 +11,7 @@ require("./config/steam")(app)
 const cors=require("cors");
 const { UserModel } = require("./config/database");
 var corsOptions = {
-  origin: ['http://localhost:3000', 'https://hypermove-demov2.netlify.app',"https://hypermove.io","http://127.0.0.1:3000"],
+  origin: ['http://localhost:3000', 'https://hypermove-demov2.netlify.app',"https://hypermove.io","https://www.hypermove.io","http://127.0.0.1:3000"],
   credentials: true,
 };
   
