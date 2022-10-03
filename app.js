@@ -19,6 +19,7 @@ var corsOptions = {
     "https://www.hypermove.io",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:3001",
+    "http://hypermove-demo.s3-website.ap-south-1.amazonaws.com"
   ],
   credentials: true,
 };
