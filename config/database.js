@@ -43,6 +43,10 @@ const userSchema = new Schema({
     steamid:{type:String},
     personaname:{type:String},
     profileurl:{type:String},
+    referralCode:{type:String},
+    referredUsers:[{type:String}],
+    referredBy:{type:String,default:null},
+    score:{type:Number,default:0}
   })
 const UserModel=mongoose.model("SteamUser",userSchema)
 const ScoreModel = mongoose.model('Score', scoreSchema);
