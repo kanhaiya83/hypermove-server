@@ -130,6 +130,16 @@
             placeholder="Tags(seperated by comma)"
             name="tags"
           />
+          <input
+          type="text"
+          placeholder="Twitter Profile Link"
+          name="twitter"
+        />
+        <input
+        type="text"
+        placeholder="Website Link"
+        name="website"
+      />
           <input type="file" id="partner-image" />
           <button>Submit</button>
         </form>
@@ -181,6 +191,8 @@
           formData.append("partner-image", e.target["partner-image"].files[0]);
           formData.append("name", e.target["name"].value);
           formData.append("tags", e.target["tags"].value);
+          formData.append("twitter", e.target["twitter"].value);
+          formData.append("website", e.target["website"].value);
           const res = await fetch("/admin/partners", {
             method: "POST",
             body: formData,
