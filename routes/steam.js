@@ -70,12 +70,12 @@ router.post("/user", verifyJWT, async (req, res) => {
      if(referredUsers.includes(req.userId)) return;
      await UserModel.updateOne({_id:referrerUser._id},
       { $push: { referredUsers: req.userId } ,$inc:
-    {score:1}})
+    {score:1,tickets:10,gems:50},})
     referrerData.referredBy= referrerUser._id
   } 
   const updatedUser = await UserModel.findByIdAndUpdate(
     req.userId,
-    { ...req.body,...referrerData, isSteamConnected: true, isMetamaskConnected: true },
+    { ...req.body,...referrerData, isSteamConnected: true, isMetamaskConnected: true,tickets:10, gems:50 },
     { new: true, upsert: true }
   );
   return res.send({ success: true, updatedUser });

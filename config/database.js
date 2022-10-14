@@ -48,7 +48,9 @@ const userSchema = new Schema({
     referralCode:{type:String},
     referredUsers:[{type:String}],
     referredBy:{type:String,default:null},
-    score:{type:Number,default:0}
+    score:{type:Number,default:0},
+    tickets:{type:Number},
+    gems:{type:Number},
   })
 const UserModel=mongoose.model("SteamUser",userSchema)
 const ScoreModel = mongoose.model('Score', scoreSchema);

@@ -168,7 +168,6 @@ app.get("/users/:method",async(req,res)=>{
 })
 app.get("/jwt", getJWT);
 app.get("/message", getMessageToSign);
-
 app.listen(PORT, () => {
   console.log(PORT);
 });
