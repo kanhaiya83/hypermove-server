@@ -19,13 +19,15 @@ var corsOptions = {
     "https://www.hypermove.io",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:3001",
-    "http://hypermove-demo.s3-website.ap-south-1.amazonaws.com"
+    "http://hypermove-demo.s3-website.ap-south-1.amazonaws.com",
+    "http://127.0.0.1:5173"
   ],
   credentials: true,
 };
 
 app.use(cors(corsOptions));
-
+app.use('/admin', express.static('client-admin/dist'))
+app.use(express.static("client-admin/dist"))
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Credentials", true);

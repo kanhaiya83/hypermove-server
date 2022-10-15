@@ -37,10 +37,20 @@ if(!isValidEthAddress(walletAddress)){
     }
   });
 
+
 router.get("/", async (req, res) => {
  
   try {
-    const scores= await ScoreModel.find();
+    const scores= await ScoreModel.find({isBanned:false});
+
+    res.send({success:true,scores});
+  } catch (e) {
+    return res.status(500).send({ success:false,message:"Some error occurred!!",error: e });
+  }
+});
+router.get("/all", async (req, res) => {
+  try {
+    const scores= await ScoreModel.find({});
 
     res.send({success:true,scores});
   } catch (e) {
@@ -57,4 +67,15 @@ router.delete("/:id",verifyJWT,async (req, res) => {
       return res.status(500).send({ success:false,message:"Some error occurred!!",error: e });
     }
   })
+  router.patch("/:id",verifyJWT,async (req, res) => {
+   const id=req.params.id
+      try {
+         await ScoreModel.updateOne({_id:id},{...req.body});
+    const scores= await ScoreModel.find({}) 
+        res.send({success:true,scores});
+      } catch (e) {
+        return res.status(500).send({ success:false,message:"Some error occurred!!",error: e });
+      }
+    })
+  
 module.exports = router;

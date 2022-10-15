@@ -27,13 +27,13 @@ router.post("/login", async (req, res) => {
     }
     return res.send({success:false})
   })
-  router.get("/",  (req, res) => {
-    try {
-      res.sendFile(path.resolve(__dirname+"/../public/index.html"))
-    } catch (e) {
-      return res.status(500).send({ success:false,message:"Some error occurred!!",error: e });
-    }
-  });
+  // router.get("/",  (req, res) => {
+  //   try {
+  //     res.sendFile(path.resolve(__dirname+"/../public/index.html"))
+  //   } catch (e) {
+  //     return res.status(500).send({ success:false,message:"Some error occurred!!",error: e });
+  //   }
+  // });
   router.get("/verify",verifyJWT,  (req, res) => {
     try {
       return res.send({success:true})
@@ -50,11 +50,24 @@ router.post("/login", async (req, res) => {
       return res.send({success:true})
   })
   router.post("/partners",upload.single("partner-image"),async(req,res)=>{
-    const partnerImage =req.file.filename
+    try{const partnerImage =req.file.filename
   const {url} = await uploadImage(path.join(__dirname,"../uploads/",partnerImage))
   console.log({image:url,...req.body})
   const newPartner = new PartnersModel({image:url,...req.body})
   const savedPartner = await newPartner.save()
-  return res.send({success:true,savedPartner})
+  const partners = await PartnersModel.find({})
+  return res.send({success:true,savedPartner,partners})}
+  catch(e){
+    console.log(e)
+    res.send({success:false})
+  }
   })
+  router.patch("/partners/:id",async(req,res)=>{
+    console.log(req.params.id,req.body)
+    const resp= await PartnersModel.findByIdAndUpdate(req.params.id,{...req.body},{new:true})
+    console.log(resp);
+    const partners = await PartnersModel.find({})
+  return res.send({success:true,partners})
+  })
+  
 module.exports = router;
