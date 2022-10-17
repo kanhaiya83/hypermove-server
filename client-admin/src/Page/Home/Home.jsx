@@ -49,7 +49,7 @@ const AdminHome = () => {
         </div>
         <div className="h-full">
           <SimpleBar style={{ maxHeight: "500px" }}>
-              <ReactSortable swap className="grid grid-cols-4 gap-2 w-full" list={partners} setList={setPartners} onUpdate={(e)=>{
+              <ReactSortable swap className="grid grid-cols-4 gap-2 w-full" list={partners} setList={setPartners} onEnd={(e)=>{
                 console.log(e)
                 console.log(partners[0].name)
               }}>
