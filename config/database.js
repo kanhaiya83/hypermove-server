@@ -33,6 +33,16 @@ const partnerSchema = new Schema({
   twitter:{type:String},
   website:{type:String}
 })
+const tournamentSchema= new Schema({
+  title:{type:String},
+  prize:{type:String},
+  entryFee:{
+    gems:{type:Number},
+    tickets:{type:Number}
+  },
+  playersCount:{type:Number,default:2},
+  title:{type:String},
+})
 const userSchema = new Schema({
     name: {type:String},
     userId: {type:String},
@@ -55,9 +65,10 @@ const userSchema = new Schema({
 const UserModel=mongoose.model("SteamUser",userSchema)
 const ScoreModel = mongoose.model('Score', scoreSchema);
 const PartnersModel = mongoose.model('Partners', partnerSchema);
+const TournamentModel = mongoose.model('Tournament', tournamentSchema);
 
 
 
 
 
-module.exports = {ScoreModel,UserModel,PartnersModel};
+module.exports = {ScoreModel,UserModel,PartnersModel,TournamentModel};

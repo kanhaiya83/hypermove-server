@@ -7,6 +7,7 @@ const Web3 = require("web3");
 const scoreRouter = require("./routes/score");
 const steamRouter = require("./routes/steam");
 const adminRouter = require("./routes/admin");
+const tournamentRouter = require("./routes/tournament");
 const app = express();
 require("./config/steam")(app);
 const cors = require("cors");
@@ -45,6 +46,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use("/admin", adminRouter);
 app.use("/score", scoreRouter);
+app.use("/tournament", tournamentRouter);
 app.use("/", steamRouter);
 
 const isValidEthAddress = (address) => Web3.utils.isAddress(address);
