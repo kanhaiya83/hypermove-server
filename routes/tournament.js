@@ -1,5 +1,6 @@
 const express = require("express");
-const { TournamentModel } = require("../config/database");
+const { TournamentModel, UserModel } = require("../config/database");
+const verifyJWT = require("../middlewares/verifyJWT");
 const router = express.Router();
 
 router.get("/",async(req,res)=>{
@@ -16,11 +17,21 @@ return res.send({success:true,tournamentsList})
 
 
 
-router.post("/",async(req,res)=>{
+router.post("/",verifyJWT,async(req,res)=>{
+// await UserModel.updateOne({_id:req.userId},{gems:100,tickets:20})
     try{
+        const {entryFee}=req.body.tournamentData
+        const gemsUsed=  parseInt(entryFee.gems)
+        const ticketsUsed=  parseInt(entryFee.tickets)
+
+        const foundUser = await UserModel.findById(req.userId)
+        if(foundUser.gems< (gemsUsed) || foundUser.tickets < (ticketsUsed)){
+            return res.send({success:false})
+        }
+        const user = await UserModel.findByIdAndUpdate(req.userId,{$inc : {gems:(-gemsUsed),tickets:(-ticketsUsed)}},{new:true}) 
         const newTour= new TournamentModel(req.body.tournamentData)
         const savedTournament = await newTour.save()
-        return res.send({success:true,savedTournament})
+        return res.send({success:true,savedTournament,user})
     }
     catch(e){
         console.log("Error in tournament/get =>",e);
