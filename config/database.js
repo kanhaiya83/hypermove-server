@@ -43,6 +43,7 @@ const tournamentSchema = new Schema({
   createdBy:{type:String},
   playersCount: { type: Number, default: 2 },
   winner:{type:String},
+  isDraw:{type:Boolean,default:false},
   joinedPlayers: [
     {
       userId: { type: String },

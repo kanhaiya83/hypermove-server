@@ -79,7 +79,7 @@ router.get("/submit", async (req, res) => {
         })
       }else if(player_2.score === player_1.score){
         await TournamentModel.findByIdAndUpdate(tournament._id,{
-          winner: player_2.userId
+          isDraw:true
         })
         
         await UserModel.findByIdAndUpdate(player_1.userId,{
