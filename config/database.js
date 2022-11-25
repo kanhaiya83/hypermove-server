@@ -34,7 +34,7 @@ const partnerSchema = new Schema({
 });
 const tournamentSchema = new Schema({
   title: { type: String },
-  prize: { type: String },
+  prize: { type: Number },
   entryFee: {
     gems: { type: Number },
     tickets: { type: Number },
@@ -44,13 +44,15 @@ const tournamentSchema = new Schema({
   playersCount: { type: Number, default: 2 },
   winner:{type:String},
   isDraw:{type:Boolean,default:false},
+  isCompleted:{type:Boolean,default:false},
   joinedPlayers: [
     {
       userId: { type: String },
       code: { type: String },
-      hasCompleted: { type: Boolean, default: false },
       score: { type: Number },
-      timeJoined: { type: Number },
+      hasPlayed:{type:Boolean,default:false},
+      gameStartTime: { type: Number },
+      gameEndTime:{type:Number},
     },
   ],
 });
@@ -73,9 +75,18 @@ const userSchema = new Schema({
   tickets: { type: Number },
   gems: { type: Number },
 });
+const poolProjectSchema = new Schema({
+  totalRaise:{type:Number,default:10000},
+  raised:{type:Number,default:3000},
+  investors:[{
+    userId:{type:String},
+    amount:{type:Number,default:0}
+  }]
+})
 const UserModel = mongoose.model("SteamUser", userSchema);
 const ScoreModel = mongoose.model("Score", scoreSchema);
 const PartnersModel = mongoose.model("Partners", partnerSchema);
 const TournamentModel = mongoose.model("Tournament", tournamentSchema);
+const PoolProjectModel = mongoose.model("poolProject", poolProjectSchema);
 
-module.exports = { ScoreModel, UserModel, PartnersModel, TournamentModel };
+module.exports = { ScoreModel, UserModel, PartnersModel, TournamentModel, PoolProjectModel };
