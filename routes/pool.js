@@ -14,6 +14,13 @@ router.get("/",async (req,res)=>{
     }
     catch(e){}
 })
+router.get("/reset",async (req,res)=>{
+    const pool = new PoolProjectModel({totalRaise:100000})
+    await pool.save()
+    res.send("success")
+    }
+)
+
 router.post("/",verifyJWT  ,async(req,res)=>{
     console.log(req.body)
     const amount = req.body.amount
