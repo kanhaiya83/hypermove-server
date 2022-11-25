@@ -52,7 +52,7 @@ router.post("/login", async (req, res) => {
   router.post("/partners/multiple",async (req,res)=>{
     const partners= req.body.partners
     for(let i = 0; i < partners.length; i++){
-      const newPartner = new  PartnersModel(p);
+      const newPartner = new  PartnersModel(partner[i]);
       await newPartner.save()
     }
   })
