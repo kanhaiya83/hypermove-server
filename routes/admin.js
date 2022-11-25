@@ -51,10 +51,10 @@ router.post("/login", async (req, res) => {
   })
   router.post("/partners/multiple",async (req,res)=>{
     const partners= req.body.partners
-    partners.forEach(async (p)=>{
+    for(let i = 0; i < partners.length; i++){
       const newPartner = new  PartnersModel(p);
-      await PartnersModel.save()
-    })
+      await newPartner.save()
+    }
   })
   router.post("/partners",upload.single("partner-image"),async(req,res)=>{
     try{const partnerImage =req.file.filename
