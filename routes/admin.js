@@ -49,7 +49,7 @@ router.post("/login", async (req, res) => {
       await PartnersModel.deleteOne({_id:req.params.id})
       return res.send({success:true})
   })
-  router.post("partners/multiple",async (req,res)=>{
+  router.post("/partners/multiple",async (req,res)=>{
     const partners= req.body.partners
     partners.forEach(async (p)=>{
       const newPartner = new  PartnersModel(p);
